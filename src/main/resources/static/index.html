@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Code Snippet Search</title>
+    <link rel="stylesheet" href="style.css"> <!-- Linking CSS -->
+</head>
+<body>
+<div class="container">
+    <h1>GitHub Code Snippet Search</h1>
+    <div class="search-container">
+        <input type="text" id="searchQuery" placeholder="Enter code search query">
+        <button onclick="searchCode()">Search</button>
+    </div>
+    <div id="loading" class="loading" style="display: none;">Loading...</div> <!-- Loading text -->
+    <h2>Results:</h2>
+    <div id="results" class="results"></div> <!-- Results section -->
+</div>
+
+<script>
+    function searchCode() {
+        const query = document.getElementById('searchQuery').value;
+        const resultsDiv = document.getElementById('results');
+        const loadingDiv = document.getElementById('loading');
+        resultsDiv.innerHTML = '';
+        loadingDiv.style.display = 'block';
+
+        fetch(`http://localhost:8080/search?query=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                loadingDiv.style.display = 'none';
+                data.forEach(repo => {
+                    const repoDiv = document.createElement('div');
+                    repoDiv.innerHTML = `<a href="${repo.html_url}" target="_blank"><h3>${repo.name}</h3></a><p>${repo.description}</p>`;
+                    resultsDiv.appendChild(repoDiv);
+                });
+            })
+            .catch(err => {
+                loadingDiv.style.display = 'none';
+                resultsDiv.innerHTML = 'Error fetching data!';
+            });
+    }
+</script>
+</body>
+</html>
